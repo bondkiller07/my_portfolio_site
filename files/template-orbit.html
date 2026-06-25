@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Alex Rivera — Creative Developer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0B0B12;
+    --surface:#14141F;
+    --surface-2:#1B1B29;
+    --text:#EDEDF2;
+    --text-dim:#8C8C9E;
+    --accent:#8B7FFF;
+    --accent-warm:#FFB199;
+    --line:#26263A;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:'Inter',sans-serif;
+    overflow-x:hidden;
+  }
+  a{color:inherit;text-decoration:none;}
+  :focus-visible{outline:2px solid var(--accent);outline-offset:3px;}
+
+  .eyebrow{
+    font-family:'JetBrains Mono',monospace;
+    font-size:.72rem;
+    letter-spacing:.18em;
+    text-transform:uppercase;
+    color:var(--accent-warm);
+  }
+
+  /* NAV */
+  nav{
+    position:fixed; top:0; left:0; right:0; z-index:50;
+    display:flex; justify-content:space-between; align-items:center;
+    padding:1.6rem clamp(1.5rem,5vw,4rem);
+    backdrop-filter:blur(8px);
+    background:linear-gradient(to bottom, rgba(11,11,18,.7), transparent);
+  }
+  .nav-mark{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:1rem;letter-spacing:.02em;}
+  .nav-mark span{color:var(--accent);}
+  .nav-links{display:flex; gap:2.2rem;}
+  .nav-links a{font-size:.85rem;color:var(--text-dim);transition:color .25s;}
+  .nav-links a:hover{color:var(--text);}
+  @media (max-width:640px){ .nav-links{display:none;} }
+
+  /* HERO */
+  .hero{
+    position:relative;
+    min-height:100vh;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    text-align:center;
+    padding:0 1.5rem;
+  }
+  .hero-canvas-wrap{
+    position:absolute; inset:0; z-index:0;
+    transition:opacity .2s linear;
+  }
+  #hero-canvas{ width:100%; height:100%; display:block; }
+  .hero-content{ position:relative; z-index:1; }
+  .hero h1{
+    font-family:'Space Grotesk',sans-serif;
+    font-weight:700;
+    font-size:clamp(2.6rem, 9vw, 6.4rem);
+    line-height:.98;
+    letter-spacing:-.01em;
+    margin:1rem 0 1.2rem;
+  }
+  .hero h1 em{
+    font-style:normal;
+    color:var(--accent);
+  }
+  .hero p.tagline{
+    color:var(--text-dim);
+    font-size:clamp(1rem,1.6vw,1.15rem);
+    max-width:36ch;
+    margin:0 auto 2.2rem;
+  }
+  .hero-cta{
+    display:inline-flex; gap:.6rem; align-items:center;
+    font-family:'JetBrains Mono',monospace;
+    font-size:.82rem;
+    padding:.85rem 1.5rem;
+    border:1px solid var(--line);
+    border-radius:999px;
+    transition:border-color .25s, transform .25s;
+  }
+  .hero-cta:hover{ border-color:var(--accent); transform:translateY(-2px); }
+  .scroll-cue{
+    position:absolute; bottom:2.4rem; left:50%; transform:translateX(-50%);
+    font-family:'JetBrains Mono',monospace; font-size:.7rem; color:var(--text-dim);
+    letter-spacing:.15em; text-transform:uppercase;
+    display:flex; flex-direction:column; align-items:center; gap:.5rem;
+  }
+  .scroll-cue::after{
+    content:''; width:1px; height:28px; background:var(--line);
+    animation:pulse 2s ease-in-out infinite;
+  }
+  @keyframes pulse{ 0%,100%{opacity:.2;} 50%{opacity:1;} }
+
+  section{ padding:clamp(4rem,10vw,7rem) clamp(1.5rem,6vw,5rem); position:relative; z-index:1; }
+  .section-head{ display:flex; align-items:baseline; gap:1rem; margin-bottom:2.6rem; }
+  .section-head h2{ font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:clamp(1.6rem,3vw,2.2rem); }
+  .section-head .eyebrow{ flex-shrink:0; }
+  .rule{ height:1px; background:var(--line); flex:1; }
+
+  /* ABOUT */
+  .about{ display:grid; grid-template-columns:1.1fr 1fr; gap:3rem; max-width:1100px; margin:0 auto; }
+  .about p{ color:var(--text-dim); font-size:1.05rem; line-height:1.75; margin-bottom:1.1rem; }
+  .about p strong{ color:var(--text); font-weight:600; }
+  .skills{ display:flex; flex-wrap:wrap; gap:.6rem; align-content:flex-start; }
+  .skill-pill{
+    font-family:'JetBrains Mono',monospace; font-size:.78rem;
+    padding:.5rem .9rem; border:1px solid var(--line); border-radius:999px;
+    color:var(--text-dim);
+  }
+  @media (max-width:760px){ .about{ grid-template-columns:1fr; } }
+
+  /* WORK */
+  .work-grid{
+    display:grid; grid-template-columns:repeat(2,1fr); gap:1.6rem;
+    max-width:1180px; margin:0 auto;
+  }
+  @media (max-width:760px){ .work-grid{ grid-template-columns:1fr; } }
+  .project-card{
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-radius:18px;
+    padding:1.8rem;
+    transition:transform .12s ease-out, border-color .25s;
+    will-change:transform;
+  }
+  .project-card:hover{ border-color:var(--accent); }
+  .project-thumb{
+    height:160px; border-radius:12px; margin-bottom:1.4rem;
+    background:linear-gradient(135deg, var(--surface-2), #232336);
+    position:relative; overflow:hidden;
+  }
+  .project-thumb::after{
+    content:''; position:absolute; inset:0;
+    background:radial-gradient(circle at 30% 30%, rgba(139,127,255,.35), transparent 60%);
+  }
+  .project-card h3{ font-family:'Space Grotesk',sans-serif; font-size:1.2rem; margin-bottom:.5rem; }
+  .project-card p{ color:var(--text-dim); font-size:.92rem; line-height:1.6; margin-bottom:1rem; }
+  .project-tags{ display:flex; gap:.5rem; flex-wrap:wrap; }
+  .project-tags span{
+    font-family:'JetBrains Mono',monospace; font-size:.7rem; color:var(--accent-warm);
+  }
+
+  /* CONTACT */
+  .contact{ text-align:center; }
+  .contact h2{
+    font-family:'Space Grotesk',sans-serif; font-weight:700;
+    font-size:clamp(2rem,6vw,3.4rem); margin-bottom:1.4rem; max-width:18ch; margin-inline:auto;
+  }
+  .contact-links{ display:flex; justify-content:center; gap:2.4rem; margin-top:2rem; flex-wrap:wrap; }
+  .contact-links a{
+    font-family:'JetBrains Mono',monospace; font-size:.85rem; color:var(--text-dim);
+    border-bottom:1px solid transparent; padding-bottom:.3rem; transition:.25s;
+  }
+  .contact-links a:hover{ color:var(--accent); border-color:var(--accent); }
+  footer{
+    text-align:center; padding:2.4rem; color:var(--text-dim);
+    font-family:'JetBrains Mono',monospace; font-size:.75rem;
+    border-top:1px solid var(--line);
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    html{ scroll-behavior:auto; }
+    .scroll-cue::after{ animation:none; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-mark">ALEX<span>·</span>RIVERA</div>
+  <div class="nav-links">
+    <a href="#about">About</a>
+    <a href="#work">Work</a>
+    <a href="#contact">Contact</a>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="hero-canvas-wrap"><canvas id="hero-canvas"></canvas></div>
+  <div class="hero-content">
+    <div class="eyebrow">Creative Developer · Open to work</div>
+    <h1>Building things<br>that feel <em>alive</em>.</h1>
+    <p class="tagline">I design and build interactive web experiences — where motion, type, and code meet.</p>
+    <a class="hero-cta" href="#work">View the work →</a>
+  </div>
+  <div class="scroll-cue">Scroll</div>
+</section>
+
+<section id="about">
+  <div class="section-head">
+    <span class="eyebrow">01 / About</span>
+    <div class="rule"></div>
+  </div>
+  <div class="about">
+    <div>
+      <p>I'm <strong>Alex Rivera</strong>, a creative developer based in San Francisco. I spend most of my time at the intersection of design and engineering — building sites and tools where the interaction <em>is</em> the design.</p>
+      <p>Over the last six years I've worked with startups and studios to ship motion-driven web experiences, generative art installations, and the occasional weird side project that probably didn't need WebGL but got it anyway.</p>
+    </div>
+    <div class="skills">
+      <span class="skill-pill">JavaScript / TypeScript</span>
+      <span class="skill-pill">Three.js / WebGL</span>
+      <span class="skill-pill">React</span>
+      <span class="skill-pill">GLSL Shaders</span>
+      <span class="skill-pill">Motion Design</span>
+      <span class="skill-pill">Figma</span>
+    </div>
+  </div>
+</section>
+
+<section id="work">
+  <div class="section-head">
+    <span class="eyebrow">02 / Selected Work</span>
+    <div class="rule"></div>
+  </div>
+  <div class="work-grid">
+    <div class="project-card">
+      <div class="project-thumb"></div>
+      <h3>Lumen — Generative Art Engine</h3>
+      <p>A browser-based tool for creating shader-driven generative art, used by 4,000+ artists.</p>
+      <div class="project-tags"><span>WebGL</span><span>GLSL</span><span>React</span></div>
+    </div>
+    <div class="project-card">
+      <div class="project-thumb"></div>
+      <h3>Atlas — Spatial Data Viz</h3>
+      <p>An interactive 3D globe for visualizing real-time logistics data across 80 countries.</p>
+      <div class="project-tags"><span>Three.js</span><span>D3</span><span>Node</span></div>
+    </div>
+    <div class="project-card">
+      <div class="project-thumb"></div>
+      <h3>Echo — Audio Reactive Visuals</h3>
+      <p>A live visual instrument that turns ambient sound into evolving particle fields.</p>
+      <div class="project-tags"><span>Web Audio</span><span>Canvas</span></div>
+    </div>
+    <div class="project-card">
+      <div class="project-thumb"></div>
+      <h3>Fieldnotes — Editorial Site</h3>
+      <p>A scroll-driven editorial experience for a climate journalism collective.</p>
+      <div class="project-tags"><span>GSAP</span><span>Next.js</span></div>
+    </div>
+  </div>
+</section>
+
+<section id="contact" class="contact">
+  <span class="eyebrow">03 / Contact</span>
+  <h2 style="margin-top:1.2rem;">Got a project in mind? Let's build it.</h2>
+  <div class="contact-links">
+    <a href="mailto:hello@alexrivera.dev">hello@alexrivera.dev</a>
+    <a href="#">GitHub</a>
+    <a href="#">LinkedIn</a>
+    <a href="#">Dribbble</a>
+  </div>
+</section>
+
+<footer>© 2026 Alex Rivera — Built with Three.js</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const canvas = document.getElementById('hero-canvas');
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(45, window.innerWidth/window.innerHeight, 0.1, 100);
+  camera.position.z = 8;
+
+  const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+  const geo = new THREE.IcosahedronGeometry(2.3, 1);
+  const wireMat = new THREE.MeshBasicMaterial({ color: 0x8B7FFF, wireframe: true, transparent: true, opacity: 0.55 });
+  const core = new THREE.Mesh(geo, wireMat);
+  scene.add(core);
+
+  const solidMat = new THREE.MeshBasicMaterial({ color: 0x1B1B29, transparent: true, opacity: 0.5 });
+  const coreSolid = new THREE.Mesh(geo.clone(), solidMat);
+  coreSolid.scale.setScalar(0.985);
+  scene.add(coreSolid);
+
+  const particleCount = 420;
+  const positions = new Float32Array(particleCount * 3);
+  for (let i = 0; i < particleCount; i++) {
+    positions[i*3]   = (Math.random()-0.5)*22;
+    positions[i*3+1] = (Math.random()-0.5)*22;
+    positions[i*3+2] = (Math.random()-0.5)*22;
+  }
+  const pGeo = new THREE.BufferGeometry();
+  pGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+  const pMat = new THREE.PointsMaterial({ color: 0xEDEDF2, size: 0.022, transparent: true, opacity: 0.35 });
+  const particles = new THREE.Points(pGeo, pMat);
+  scene.add(particles);
+
+  let mouseX = 0, mouseY = 0;
+  window.addEventListener('mousemove', (e) => {
+    mouseX = (e.clientX / window.innerWidth) - 0.5;
+    mouseY = (e.clientY / window.innerHeight) - 0.5;
+  });
+
+  function animate(){
+    requestAnimationFrame(animate);
+    if (!reduceMotion){
+      core.rotation.y += 0.0018;
+      core.rotation.x += 0.0008;
+      coreSolid.rotation.copy(core.rotation);
+      particles.rotation.y += 0.0004;
+      camera.position.x += (mouseX * 1.3 - camera.position.x) * 0.04;
+      camera.position.y += (-mouseY * 1.3 - camera.position.y) * 0.04;
+      camera.lookAt(0,0,0);
+    }
+    renderer.render(scene, camera);
+  }
+  animate();
+
+  window.addEventListener('resize', () => {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+  });
+
+  const heroCanvasWrap = document.querySelector('.hero-canvas-wrap');
+  window.addEventListener('scroll', () => {
+    const y = window.scrollY;
+    heroCanvasWrap.style.opacity = Math.max(0, 1 - y/600);
+    core.scale.setScalar(1 + y*0.0006);
+    coreSolid.scale.setScalar((1 + y*0.0006)*0.985);
+  });
+
+  document.querySelectorAll('.project-card').forEach(card => {
+    card.addEventListener('mousemove', (e) => {
+      if (reduceMotion) return;
+      const r = card.getBoundingClientRect();
+      const x = (e.clientX - r.left)/r.width - 0.5;
+      const y = (e.clientY - r.top)/r.height - 0.5;
+      card.style.transform = `perspective(800px) rotateY(${x*7}deg) rotateX(${-y*7}deg) translateZ(6px)`;
+    });
+    card.addEventListener('mouseleave', () => { card.style.transform = ''; });
+  });
+</script>
+</body>
+</html>
