@@ -249,7 +249,7 @@
   renderer.setSize(w, h);
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
-  function makeTileTexture(label, role){
+  function makeTileTexture(label, role, status){
     const c = document.createElement('canvas');
     c.width = 256; c.height = 340;
     const ctx = c.getContext('2d');
@@ -264,22 +264,22 @@
     ctx.fillText(role.toUpperCase(), 28, 280);
     ctx.fillStyle = '#5C5C53';
     ctx.font = '400 12px monospace';
-    ctx.fillText('STATUS: BUILDING', 28, 305);
+    ctx.fillText(`STATUS: ${status}`, 28, 305);
     return new THREE.CanvasTexture(c);
   }
 
   const labels = [
-    ['01','Resume Challenge'],
-    ['02','Three-Tier App'],
-    ['03','Serverless API']
+    ['01','Resume Challenge', 'Finished'],
+    ['02','Three-Tier App', 'Building'],
+    ['03','Serverless API', 'Building']
   ];
   const group = new THREE.Group();
   scene.add(group);
   const radius = 3.6;
   const tileGeo = new THREE.PlaneGeometry(2.3, 3.05);
-  labels.forEach(([num, role], i) => {
+  labels.forEach(([num, role, status], i) => {
     const angle = (i / labels.length) * Math.PI * 2;
-    const tex = makeTileTexture(num, role);
+    const tex = makeTileTexture(num, role, status);
     const mat = new THREE.MeshBasicMaterial({ map: tex, transparent: true });
     const tile = new THREE.Mesh(tileGeo, mat);
     tile.position.set(Math.sin(angle) * radius, 0, Math.cos(angle) * radius);
