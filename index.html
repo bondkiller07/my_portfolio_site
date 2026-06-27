@@ -3,169 +3,215 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Abhishek Diwakar — AWS Cloud Engineer Version 2</title>
+<title>Abhishek Diwakar — AWS Cloud Engineer</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@800;900&family=Inter:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
   :root{
+    --bg:#0A0A12;
+    --surface:#15151F;
+    --surface-2:#1C1C2B;
+    --surface-3:#232336;
+    --text:#EDEDF2;
+    --dim:#8C8C9E;
+    --accent:#5B7FFF;
+    --accent-rgb:91,127,255;
+    --accent-warm:#FFB199;
+    --line:#262638;
+    --glass:rgba(21,21,31,.45);
+  }
+  html[data-theme="light"]{
     --bg:#ECECE6;
     --surface:#FFFFFF;
-    --ink:#14140F;
-    --accent:#2349FF;
-    --line:#C9C9BD;
+    --surface-2:#E4E4DA;
+    --surface-3:#E4E8FF;
+    --text:#14140F;
     --dim:#5C5C53;
+    --accent:#2349FF;
+    --accent-rgb:35,73,255;
+    --accent-warm:#D9764F;
+    --line:#C9C9BD;
+    --glass:rgba(236,236,230,.55);
   }
   *{margin:0;padding:0;box-sizing:border-box;}
   html{scroll-behavior:smooth;}
-  body{
-    background:var(--bg);
-    color:var(--ink);
-    font-family:'Inter',sans-serif;
-    overflow-x:hidden;
-  }
+  body{ background:var(--bg); color:var(--text); font-family:'Inter',sans-serif; overflow-x:hidden; }
   a{color:inherit;text-decoration:none;}
-  :focus-visible{outline:3px solid var(--accent);outline-offset:2px;}
+  :focus-visible{ outline:2px solid var(--accent); outline-offset:3px; }
   .mono{ font-family:'Space Mono',monospace; }
 
   header{
-    position:sticky; top:0; z-index:50; background:var(--bg);
-    border-bottom:4px solid var(--ink);
+    position:sticky; top:0; z-index:50;
+    background:var(--glass); backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--line);
     display:flex; justify-content:space-between; align-items:center;
     padding:1.1rem clamp(1.2rem,5vw,3rem);
   }
-  .mark{ font-family:'Archivo',sans-serif; font-weight:900; font-size:1.15rem; letter-spacing:-.01em; }
-  nav{ display:flex; gap:2rem; }
-  nav a{ font-family:'Space Mono',monospace; font-size:.78rem; text-transform:uppercase; letter-spacing:.05em; }
+  .mark{ font-family:'Archivo',sans-serif; font-weight:900; font-size:1.05rem; letter-spacing:-.01em; }
+  .mark span{ color:var(--accent); }
+  nav{ display:flex; gap:2rem; align-items:center; }
+  nav a{ font-family:'Space Mono',monospace; font-size:.76rem; text-transform:uppercase; letter-spacing:.06em; color:var(--dim); transition:color .25s; }
   nav a:hover{ color:var(--accent); }
+  .theme-toggle{
+    width:34px; height:34px; border-radius:999px;
+    border:1px solid var(--line); background:transparent; color:var(--text);
+    font-size:.95rem; line-height:1; cursor:pointer;
+    display:flex; align-items:center; justify-content:center;
+    transition:border-color .25s, background .25s, transform .2s;
+  }
+  .theme-toggle:hover{ border-color:var(--accent); transform:translateY(-1px); }
   @media (max-width:640px){ nav{ display:none; } }
 
   /* HERO */
   .hero{
-    display:grid; grid-template-columns:1.2fr 1fr; align-items:center;
-    border-bottom:4px solid var(--ink);
-    min-height:88vh;
+    position:relative; min-height:92vh; overflow:hidden;
+    display:grid; grid-template-columns:1.15fr 1fr;
+    border-bottom:1px solid var(--line);
   }
-  .hero-text{ padding:clamp(2rem,6vw,4rem); }
-  .hero-text .mono.eyebrow{
-    font-size:.78rem; letter-spacing:.1em; text-transform:uppercase; color:var(--accent);
-    display:block; margin-bottom:1.2rem;
-  }
+  .ambient-wrap{ position:absolute; inset:0; z-index:0; transition:opacity .2s linear; }
+  #ambient-canvas{ width:100%; height:100%; display:block; }
+
+  .hero-text{ position:relative; z-index:1; padding:clamp(2rem,6vw,4rem); display:flex; flex-direction:column; justify-content:center; }
+  .eyebrow{ font-size:.76rem; letter-spacing:.1em; text-transform:uppercase; color:var(--accent); margin-bottom:1.3rem; }
   .hero-text h1{
     font-family:'Archivo',sans-serif; font-weight:900;
-    font-size:clamp(2.8rem,9vw,6.2rem); line-height:.92; letter-spacing:-.02em;
+    font-size:clamp(2.8rem,8.5vw,5.6rem); line-height:.95; letter-spacing:-.02em;
   }
-  .hero-text p{
-    margin-top:1.6rem; max-width:34ch; color:var(--dim); font-size:1.05rem; line-height:1.6;
+  .tw-line{ display:inline-block; min-height:1em; }
+  .caret{
+    display:inline-block; width:.07em; height:.8em; background:var(--accent);
+    margin-left:.06em; vertical-align:-0.05em; opacity:1;
   }
-  .hero-text .hint{
-    margin-top:2rem; font-size:.78rem; color:var(--dim);
-  }
-  .hero-canvas-wrap{
-    position:relative; height:100%; min-height:480px;
-    border-left:4px solid var(--ink);
-    display:flex; align-items:center; justify-content:center;
-    cursor:grab;
+  .caret.blink{ animation:caretBlink .9s steps(1) infinite; }
+  @keyframes caretBlink{ 50%{ opacity:0; } }
+  .hero-text p{ margin-top:1.6rem; max-width:36ch; color:var(--dim); font-size:1.05rem; line-height:1.65; }
+  .hint{ margin-top:2rem; font-size:.78rem; color:var(--dim); }
+
+  .hero-carousel-wrap{
+    position:relative; z-index:1; min-height:420px;
+    background:var(--glass); backdrop-filter:blur(8px);
+    border-left:1px solid var(--line);
+    display:flex; align-items:center; justify-content:center; cursor:grab;
   }
   #index-canvas{ width:100%; height:100%; display:block; }
   @media (max-width:880px){
     .hero{ grid-template-columns:1fr; }
-    .hero-canvas-wrap{ border-left:none; border-top:4px solid var(--ink); min-height:360px; }
+    .hero-carousel-wrap{ border-left:none; border-top:1px solid var(--line); min-height:320px; }
   }
 
-  section{ padding:clamp(3.5rem,8vw,6rem) clamp(1.2rem,5vw,3rem); }
-
-  .sec-label{
-    display:flex; align-items:center; gap:1rem; margin-bottom:2.2rem;
+  .corner-tag{
+    position:absolute; left:1.6rem; bottom:1.6rem; z-index:1;
+    font-size:.68rem; color:var(--dim); letter-spacing:.12em; text-transform:uppercase;
+    transform:rotate(-90deg); transform-origin:left bottom;
+    white-space:nowrap;
   }
+  @media (max-width:640px){ .corner-tag{ display:none; } }
+
+  section{ padding:clamp(3.5rem,8vw,6rem) clamp(1.2rem,5vw,3rem); max-width:1180px; margin:0 auto; }
+  .sec-label{ display:flex; align-items:center; gap:1rem; margin-bottom:2.4rem; }
   .sec-label .mono{ font-size:.78rem; text-transform:uppercase; letter-spacing:.08em; color:var(--accent); }
-  .sec-label .rule{ flex:1; height:2px; background:var(--ink); }
+  .sec-label .rule{ flex:1; height:1px; background:var(--line); }
 
-  /* INDEX LIST */
-  .index-list{ border-top:2px solid var(--ink); }
+  /* INDEX / WORK */
+  .index-list{ display:flex; flex-direction:column; gap:1rem; }
   .index-row{
-    display:grid; grid-template-columns:80px 1fr auto auto;
-    align-items:center; gap:1.5rem;
-    padding:1.6rem 0; border-bottom:2px solid var(--ink);
-    cursor:pointer; position:relative; overflow:hidden;
+    position:relative; overflow:hidden;
+    display:grid; grid-template-columns:60px 1fr auto auto;
+    align-items:center; gap:1.2rem;
+    background:var(--surface); border:1px solid var(--line); border-radius:16px;
+    padding:1.5rem 1.7rem;
+    cursor:pointer; transition:border-color .25s, transform .12s ease-out;
+    will-change:transform;
   }
-  .index-row .num{ font-family:'Space Mono',monospace; font-size:1rem; color:var(--accent); }
-  .index-row h3{ font-family:'Archivo',sans-serif; font-weight:900; font-size:clamp(1.2rem,2.6vw,1.8rem); transition:transform .3s; }
+  .index-row:hover{ border-color:var(--accent); }
+  .index-row .num{ font-size:.95rem; color:var(--accent); }
+  .index-row h3{ font-family:'Archivo',sans-serif; font-weight:800; font-size:clamp(1.1rem,2.2vw,1.5rem); display:flex; align-items:center; flex-wrap:wrap; gap:.6rem; }
+  .index-row .role{ font-size:.82rem; color:var(--dim); display:none; }
+  .index-row .tech{ font-size:.78rem; color:var(--dim); text-align:right; }
+  @media (min-width:640px){ .index-row{ grid-template-columns:60px 1fr auto auto auto; } .index-row .role{ display:block; } }
   .status-badge{
     font-family:'Space Mono',monospace; font-weight:400; font-size:.62rem;
     text-transform:uppercase; letter-spacing:.08em;
-    border:2px solid var(--accent); color:var(--accent);
-    border-radius:999px; padding:.2rem .6rem; margin-left:.7rem; vertical-align:middle;
+    border:1px solid var(--accent); color:var(--accent);
+    border-radius:999px; padding:.2rem .6rem;
   }
-  .index-row .year{ font-family:'Space Mono',monospace; font-size:.85rem; color:var(--dim); }
-  .index-row .role{ font-size:.85rem; color:var(--dim); display:none; }
-  @media (min-width:640px){ .index-row{ grid-template-columns:80px 1fr auto auto auto; } .index-row .role{ display:block; } }
-  .index-row:hover h3{ transform:translateX(10px); color:var(--accent); }
   .index-thumb{
-    position:absolute; right:6%; top:50%; transform:translateY(-50%) translateX(20px) rotate(3deg) scale(.9);
-    width:130px; height:84px; background:var(--ink); border-radius:4px;
-    opacity:0; transition:opacity .3s, transform .3s; pointer-events:none;
-    box-shadow:6px 6px 0 var(--accent);
+    position:absolute; right:5%; top:50%; transform:translateY(-50%) translateX(20px) scale(.92);
+    width:120px; height:78px; border-radius:8px; opacity:0; pointer-events:none;
+    background:linear-gradient(135deg, var(--surface-2), var(--surface-3));
+    transition:opacity .3s, transform .3s;
   }
-  .index-row:hover .index-thumb{ opacity:1; transform:translateY(-50%) translateX(0) rotate(-2deg) scale(1); }
+  .index-thumb::after{ content:''; position:absolute; inset:0; border-radius:8px; background:radial-gradient(circle at 30% 30%, rgba(var(--accent-rgb),.4), transparent 60%); }
+  .index-row:hover .index-thumb{ opacity:1; transform:translateY(-50%) translateX(0) scale(1); }
 
   /* ABOUT */
   .about{ display:grid; grid-template-columns:1fr 1.4fr; gap:3rem; }
   .about-quote{
-    font-family:'Archivo',sans-serif; font-weight:800; font-size:clamp(1.4rem,3vw,1.9rem);
-    line-height:1.25; border-left:6px solid var(--accent); padding-left:1.4rem;
+    font-family:'Archivo',sans-serif; font-weight:800; font-size:clamp(1.3rem,2.8vw,1.7rem);
+    line-height:1.3; border-left:4px solid var(--accent); padding-left:1.3rem; color:var(--text);
   }
   .about-copy p{ color:var(--dim); font-size:1.02rem; line-height:1.75; margin-bottom:1.1rem; }
-  .about-copy strong{ color:var(--ink); }
+  .about-copy strong{ color:var(--text); }
   .skill-row{ display:flex; flex-wrap:wrap; gap:.6rem; margin-top:1.4rem; }
   .skill-pill{
     font-family:'Space Mono',monospace; font-size:.75rem;
-    padding:.45rem .85rem; border:2px solid var(--ink); border-radius:999px;
-    color:var(--ink); transition:background .25s, color .25s;
+    padding:.45rem .85rem; border:1px solid var(--line); border-radius:999px;
+    color:var(--dim); transition:border-color .25s, color .25s;
   }
-  .skill-pill:hover{ background:var(--ink); color:var(--bg); }
+  .skill-pill:hover{ border-color:var(--accent); color:var(--accent); }
   @media (max-width:780px){ .about{ grid-template-columns:1fr; } }
 
   /* CONTACT */
   .contact-block{
-    background:var(--ink); color:var(--bg); border-radius:8px;
+    background:linear-gradient(135deg, var(--surface), var(--surface-3));
+    border:1px solid var(--line); border-radius:20px;
     padding:clamp(2.4rem,6vw,4rem); display:grid; grid-template-columns:1.3fr 1fr; gap:2rem;
   }
   .contact-block h2{
-    font-family:'Archivo',sans-serif; font-weight:900; font-size:clamp(2rem,5vw,3.2rem); line-height:1.05;
+    font-family:'Archivo',sans-serif; font-weight:900; font-size:clamp(1.9rem,4.6vw,3rem); line-height:1.08;
   }
-  .contact-block h2 span{ color:#7C93FF; }
+  .contact-block h2 span{ color:var(--accent); }
   .contact-list{ display:flex; flex-direction:column; gap:.9rem; justify-content:center; }
-  .contact-list a{ font-family:'Space Mono',monospace; font-size:.95rem; border-bottom:1px solid #3a3a33; padding-bottom:.6rem; }
-  .contact-list a:hover{ color:#7C93FF; }
+  .contact-list a{ font-family:'Space Mono',monospace; font-size:.92rem; color:var(--dim); border-bottom:1px solid var(--line); padding-bottom:.6rem; transition:color .25s, border-color .25s; }
+  .contact-list a:hover{ color:var(--accent); border-color:var(--accent); }
   @media (max-width:700px){ .contact-block{ grid-template-columns:1fr; } }
 
   footer{
-    border-top:4px solid var(--ink); padding:1.6rem clamp(1.2rem,5vw,3rem);
-    display:flex; justify-content:space-between; font-family:'Space Mono',monospace; font-size:.75rem; color:var(--dim);
+    border-top:1px solid var(--line); padding:1.6rem clamp(1.2rem,5vw,3rem);
+    display:flex; justify-content:space-between;
+    font-family:'Space Mono',monospace; font-size:.74rem; color:var(--dim);
   }
 
-  @media (prefers-reduced-motion: reduce){ html{ scroll-behavior:auto; } }
+  @media (prefers-reduced-motion: reduce){
+    html{ scroll-behavior:auto; }
+  }
 </style>
 </head>
 <body>
 
 <header>
-  <div class="mark">ABHISHEK DIWAKAR</div>
+  <div class="mark">ABHISHEK<span> ·</span> DIWAKAR</div>
   <nav>
     <a href="#work">Index</a>
     <a href="#about">About</a>
     <a href="#contact">Contact</a>
   </nav>
+  <button id="theme-toggle" class="theme-toggle" type="button" aria-label="Switch to light mode">☾</button>
 </header>
 
 <section class="hero" style="padding:0;">
+  <div class="ambient-wrap"><canvas id="ambient-canvas"></canvas></div>
+
   <div class="hero-text">
-    <span class="mono eyebrow">AWS Cloud Engineer (Fresher) — Mumbai, India</span>
-    <h1>BUILDING<br>ON<br>AWS.</h1>
+    <span class="eyebrow mono">AWS Cloud Engineer (Fresher) — Mumbai, India</span>
+    <h1><span class="tw-line" id="tw-line-1"></span><br><span class="tw-line" id="tw-line-2"></span><br><span class="tw-line" id="tw-line-3"></span></h1>
     <p>Aspiring cloud engineer building real AWS infrastructure from the ground up. Three projects in progress — spin the stack or scroll the index below.</p>
-    <div class="mono hint">↳ drag the cards to spin →</div>
+    <div class="hint mono">↳ drag the cards to spin →</div>
   </div>
-  <div class="hero-canvas-wrap"><canvas id="index-canvas"></canvas></div>
+
+  <div class="hero-carousel-wrap"><canvas id="index-canvas"></canvas></div>
+
+  <div class="corner-tag mono">Index — 03 Projects In Progress</div>
 </section>
 
 <section id="work">
@@ -175,21 +221,21 @@
       <span class="num mono">01</span>
       <h3>AWS Cloud Resume Hosting <span class="status-badge">Finished</span></h3>
       <span class="role mono">Static Hosting</span>
-      <span class="year mono">S3 · CloudFront · IAM · GitHub Actions · AWS CLI</span>
+      <span class="tech mono">S3 · CloudFront · IAM · GitHub Actions · AWS CLI</span>
       <div class="index-thumb"></div>
     </div>
     <div class="index-row">
       <span class="num mono">02</span>
       <h3>AWS Three-Tier Architecture <span class="status-badge">Building</span></h3>
       <span class="role mono">VPC + Compute</span>
-      <span class="year mono">EC2 · ALB · RDS</span>
+      <span class="tech mono">EC2 · ALB · RDS</span>
       <div class="index-thumb"></div>
     </div>
     <div class="index-row">
       <span class="num mono">03</span>
       <h3>Serverless Visitor Counter API <span class="status-badge">Building</span></h3>
       <span class="role mono">Serverless</span>
-      <span class="year mono">Lambda · DynamoDB</span>
+      <span class="tech mono">Lambda · DynamoDB</span>
       <div class="index-thumb"></div>
     </div>
   </div>
@@ -235,87 +281,258 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const canvas = document.getElementById('index-canvas');
-  const wrap = document.querySelector('.hero-canvas-wrap');
+  const root = document.documentElement;
 
-  function size(){ return { w: wrap.clientWidth, h: wrap.clientHeight }; }
-  const { w, h } = size();
+  const THEME_COLORS = {
+    dark:  { accent: 0x5B7FFF, surface: 0x15151F, particle: 0xEDEDF2,
+             cardFill: '#15151F', cardBorder: '#5B7FFF', cardLabel: '#EDEDF2', cardCaption: '#8C8C9E' },
+    light: { accent: 0x2349FF, surface: 0xFFFFFF, particle: 0x5C5C53,
+             cardFill: '#FFFFFF', cardBorder: '#2349FF', cardLabel: '#14140F', cardCaption: '#5C5C53' }
+  };
+  let currentTheme = window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+  root.setAttribute('data-theme', currentTheme);
+  const themeUpdaters = [];
 
-  const scene = new THREE.Scene();
-  const camera = new THREE.PerspectiveCamera(38, w/h, 0.1, 100);
-  camera.position.set(0, 0, 9);
+  /* ---------- Ambient hero scene (wireframe + particles) ---------- */
+  (function(){
+    const wrap = document.querySelector('.ambient-wrap');
+    const canvas = document.getElementById('ambient-canvas');
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(45, wrap.clientWidth/wrap.clientHeight, 0.1, 100);
+    camera.position.z = 8;
+    const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+    renderer.setSize(wrap.clientWidth, wrap.clientHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
-  const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
-  renderer.setSize(w, h);
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    const geo = new THREE.IcosahedronGeometry(2.3, 1);
+    const initC = THEME_COLORS[currentTheme];
+    const wireMat = new THREE.MeshBasicMaterial({ color: initC.accent, wireframe: true, transparent: true, opacity: 0.45 });
+    const core = new THREE.Mesh(geo, wireMat);
+    scene.add(core);
 
-  function makeTileTexture(label, role, status){
-    const c = document.createElement('canvas');
-    c.width = 256; c.height = 340;
-    const ctx = c.getContext('2d');
-    ctx.fillStyle = '#14140F'; ctx.fillRect(0,0,256,340);
-    ctx.strokeStyle = '#2349FF'; ctx.lineWidth = 6;
-    ctx.strokeRect(10,10,236,320);
-    ctx.fillStyle = '#2349FF';
-    ctx.font = '900 64px Arial';
-    ctx.fillText(label, 28, 110);
-    ctx.fillStyle = '#ECECE6';
-    ctx.font = '600 16px monospace';
-    ctx.fillText(role.toUpperCase(), 28, 280);
-    ctx.fillStyle = '#5C5C53';
-    ctx.font = '400 12px monospace';
-    ctx.fillText(`STATUS: ${status}`, 28, 305);
-    return new THREE.CanvasTexture(c);
-  }
+    const solidMat = new THREE.MeshBasicMaterial({ color: initC.surface, transparent: true, opacity: 0.5 });
+    const coreSolid = new THREE.Mesh(geo.clone(), solidMat);
+    coreSolid.scale.setScalar(0.985);
+    scene.add(coreSolid);
 
-  const labels = [
-    ['01','Resume Challenge', 'Finished'],
-    ['02','Three-Tier App', 'Building'],
-    ['03','Serverless API', 'Building']
-  ];
-  const group = new THREE.Group();
-  scene.add(group);
-  const radius = 3.6;
-  const tileGeo = new THREE.PlaneGeometry(2.3, 3.05);
-  labels.forEach(([num, role, status], i) => {
-    const angle = (i / labels.length) * Math.PI * 2;
-    const tex = makeTileTexture(num, role, status);
-    const mat = new THREE.MeshBasicMaterial({ map: tex, transparent: true });
-    const tile = new THREE.Mesh(tileGeo, mat);
-    tile.position.set(Math.sin(angle) * radius, 0, Math.cos(angle) * radius);
-    group.add(tile);
-  });
-
-  let isDown = false, lastX = 0, velocity = 0.0015;
-  canvas.style.touchAction = 'none';
-  canvas.addEventListener('pointerdown', (e) => { isDown = true; lastX = e.clientX; wrap.style.cursor = 'grabbing'; });
-  window.addEventListener('pointerup', () => { isDown = false; wrap.style.cursor = 'grab'; });
-  window.addEventListener('pointermove', (e) => {
-    if (!isDown) return;
-    const dx = e.clientX - lastX;
-    velocity = dx * 0.006;
-    group.rotation.y += velocity;
-    lastX = e.clientX;
-  });
-
-  function animate(){
-    requestAnimationFrame(animate);
-    if (!reduceMotion){
-      if (!isDown){
-        velocity *= 0.95;
-        group.rotation.y += velocity + 0.0012;
-      }
-      group.children.forEach(tile => tile.lookAt(camera.position));
+    const particleCount = 320;
+    const positions = new Float32Array(particleCount * 3);
+    for (let i = 0; i < particleCount; i++) {
+      positions[i*3]   = (Math.random()-0.5)*22;
+      positions[i*3+1] = (Math.random()-0.5)*22;
+      positions[i*3+2] = (Math.random()-0.5)*22;
     }
-    renderer.render(scene, camera);
-  }
-  animate();
+    const pGeo = new THREE.BufferGeometry();
+    pGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+    const pMat = new THREE.PointsMaterial({ color: initC.particle, size: 0.02, transparent: true, opacity: 0.3 });
+    const particles = new THREE.Points(pGeo, pMat);
+    scene.add(particles);
 
-  window.addEventListener('resize', () => {
+    themeUpdaters.push(function(mode){
+      const c = THEME_COLORS[mode];
+      wireMat.color.setHex(c.accent);
+      solidMat.color.setHex(c.surface);
+      pMat.color.setHex(c.particle);
+    });
+
+    let mouseX = 0, mouseY = 0;
+    window.addEventListener('mousemove', (e) => {
+      mouseX = (e.clientX / window.innerWidth) - 0.5;
+      mouseY = (e.clientY / window.innerHeight) - 0.5;
+    });
+
+    function animate(){
+      requestAnimationFrame(animate);
+      if (!reduceMotion){
+        core.rotation.y += 0.0014;
+        core.rotation.x += 0.0006;
+        coreSolid.rotation.copy(core.rotation);
+        particles.rotation.y += 0.0003;
+        camera.position.x += (mouseX * 1.1 - camera.position.x) * 0.04;
+        camera.position.y += (-mouseY * 1.1 - camera.position.y) * 0.04;
+        camera.lookAt(0,0,0);
+      }
+      renderer.render(scene, camera);
+    }
+    animate();
+
+    window.addEventListener('resize', () => {
+      camera.aspect = wrap.clientWidth / wrap.clientHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(wrap.clientWidth, wrap.clientHeight);
+    });
+
+    window.addEventListener('scroll', () => {
+      const y = window.scrollY;
+      wrap.style.opacity = Math.max(0, 1 - y/600);
+    });
+  })();
+
+  /* ---------- Draggable project carousel ---------- */
+  (function(){
+    const wrap = document.querySelector('.hero-carousel-wrap');
+    const canvas = document.getElementById('index-canvas');
+    function size(){ return { w: wrap.clientWidth, h: wrap.clientHeight }; }
     const { w, h } = size();
-    camera.aspect = w / h;
-    camera.updateProjectionMatrix();
+
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(38, w/h, 0.1, 100);
+    camera.position.set(0, 0, 9);
+    const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
     renderer.setSize(w, h);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+    function makeTileTexture(label, role, mode, status){
+      const c = THEME_COLORS[mode];
+      const cc = document.createElement('canvas');
+      cc.width = 256; cc.height = 340;
+      const ctx = cc.getContext('2d');
+      ctx.fillStyle = c.cardFill; ctx.fillRect(0,0,256,340);
+      ctx.strokeStyle = c.cardBorder; ctx.lineWidth = 6;
+      ctx.strokeRect(10,10,236,320);
+      ctx.fillStyle = c.cardBorder;
+      ctx.font = '900 64px Arial';
+      ctx.fillText(label, 28, 110);
+      ctx.fillStyle = c.cardLabel;
+      ctx.font = '600 16px monospace';
+      ctx.fillText(role.toUpperCase(), 28, 280);
+      ctx.fillStyle = c.cardCaption;
+      ctx.font = '400 12px monospace';
+      ctx.fillText(`STATUS: ${status}`, 28, 305);
+      return new THREE.CanvasTexture(cc);
+    }
+
+    const labels = [
+      ['01','Resume Challenge', 'Finished'],
+      ['02','Three-Tier App', 'Building'],
+      ['03','Serverless API', 'Planning']
+    ];
+    const group = new THREE.Group();
+    scene.add(group);
+    const radius = 3.6;
+    const tileGeo = new THREE.PlaneGeometry(2.3, 3.05);
+    labels.forEach(([num, role, status], i) => {
+      const angle = (i / labels.length) * Math.PI * 2;
+      const tex = makeTileTexture(num, role, currentTheme, status);
+      const mat = new THREE.MeshBasicMaterial({ map: tex, transparent: true });
+      const tile = new THREE.Mesh(tileGeo, mat);
+      tile.position.set(Math.sin(angle) * radius, 0, Math.cos(angle) * radius);
+      group.add(tile);
+    });
+
+    themeUpdaters.push(function(mode){
+      group.children.forEach((tile, i) => {
+        const [num, role, status] = labels[i];
+        const oldMap = tile.material.map;
+        tile.material.map = makeTileTexture(num, role, mode, status);
+        tile.material.needsUpdate = true;
+        if (oldMap) oldMap.dispose();
+      });
+    });
+
+    let isDown = false, lastX = 0, velocity = 0.0012;
+    canvas.style.touchAction = 'none';
+    canvas.addEventListener('pointerdown', (e) => { isDown = true; lastX = e.clientX; wrap.style.cursor = 'grabbing'; });
+    window.addEventListener('pointerup', () => { isDown = false; wrap.style.cursor = 'grab'; });
+    window.addEventListener('pointermove', (e) => {
+      if (!isDown) return;
+      const dx = e.clientX - lastX;
+      velocity = dx * 0.006;
+      group.rotation.y += velocity;
+      lastX = e.clientX;
+    });
+
+    function animate(){
+      requestAnimationFrame(animate);
+      if (!reduceMotion){
+        if (!isDown){ velocity *= 0.95; group.rotation.y += velocity + 0.0012; }
+        group.children.forEach(tile => tile.lookAt(camera.position));
+      }
+      renderer.render(scene, camera);
+    }
+    animate();
+
+    window.addEventListener('resize', () => {
+      const { w, h } = size();
+      camera.aspect = w / h;
+      camera.updateProjectionMatrix();
+      renderer.setSize(w, h);
+    });
+  })();
+
+  /* ---------- Looping typewriter headline ---------- */
+  (function(){
+    const words = ['BUILDING', 'ON', 'AWS.'];
+    const els = [document.getElementById('tw-line-1'), document.getElementById('tw-line-2'), document.getElementById('tw-line-3')];
+
+    if (reduceMotion){
+      words.forEach((w, i) => { els[i].textContent = w; });
+      return;
+    }
+
+    const TYPE_MS = 85, ERASE_MS = 50, LINE_GAP_MS = 160, FULL_PAUSE_MS = 1400, EMPTY_PAUSE_MS = 500;
+    const caret = (blink) => `<span class="caret${blink ? ' blink' : ''}"></span>`;
+    const sleep = (ms) => new Promise(r => setTimeout(r, ms));
+
+    function render(activeIdx, charCount, blink){
+      words.forEach((w, i) => {
+        if (i < activeIdx) els[i].textContent = w;
+        else if (i === activeIdx) els[i].innerHTML = w.slice(0, charCount) + caret(blink);
+        else els[i].textContent = '';
+      });
+    }
+
+    async function cycle(){
+      for (let li = 0; li < words.length; li++){
+        for (let ci = 1; ci <= words[li].length; ci++){
+          render(li, ci, false);
+          await sleep(TYPE_MS);
+        }
+        if (li < words.length - 1) await sleep(LINE_GAP_MS);
+      }
+      render(words.length - 1, words[words.length - 1].length, true);
+      await sleep(FULL_PAUSE_MS);
+
+      for (let li = words.length - 1; li >= 0; li--){
+        for (let ci = words[li].length - 1; ci >= 0; ci--){
+          render(li, ci, false);
+          await sleep(ERASE_MS);
+        }
+        if (li > 0) await sleep(LINE_GAP_MS * 0.6);
+      }
+      render(0, 0, true);
+      await sleep(EMPTY_PAUSE_MS);
+    }
+
+    (async function loopForever(){
+      while (true){ await cycle(); }
+    })();
+  })();
+
+  /* ---------- 3D tilt on index rows ---------- */
+  document.querySelectorAll('.index-row').forEach(row => {
+    row.addEventListener('mousemove', (e) => {
+      if (reduceMotion) return;
+      const r = row.getBoundingClientRect();
+      const x = (e.clientX - r.left)/r.width - 0.5;
+      const y = (e.clientY - r.top)/r.height - 0.5;
+      row.style.transform = `perspective(900px) rotateY(${x*4}deg) rotateX(${-y*4}deg) translateZ(4px)`;
+    });
+    row.addEventListener('mouseleave', () => { row.style.transform = ''; });
+  });
+
+  /* ---------- Theme toggle ---------- */
+  const toggleBtn = document.getElementById('theme-toggle');
+  function setToggleIcon(mode){
+    toggleBtn.textContent = mode === 'dark' ? '☾' : '☀';
+    toggleBtn.setAttribute('aria-label', mode === 'dark' ? 'Switch to light mode' : 'Switch to dark mode');
+  }
+  setToggleIcon(currentTheme);
+  toggleBtn.addEventListener('click', () => {
+    currentTheme = currentTheme === 'dark' ? 'light' : 'dark';
+    root.setAttribute('data-theme', currentTheme);
+    setToggleIcon(currentTheme);
+    themeUpdaters.forEach(fn => fn(currentTheme));
   });
 </script>
 </body>
