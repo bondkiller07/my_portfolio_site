@@ -137,8 +137,9 @@
   .corner.tl{top:36px;left:var(--edge);display:flex;align-items:center;gap:8px;}
   .corner.tl .dot{width:5px;height:5px;border-radius:50%;background:var(--amber);}
   .corner.tr{top:36px;right:var(--edge);}
-  .corner.bl{bottom:36px;left:var(--edge);color:var(--muted);}
-  .corner.br{bottom:36px;right:var(--edge);}
+  .corner.bl{bottom:36px;left:var(--edge);color:var(--muted);transition:opacity .4s var(--ease);}
+  .corner.br{bottom:36px;right:var(--edge);transition:opacity .4s var(--ease);}
+  body.footer-visible .corner.bl, body.footer-visible .corner.br{opacity:0;pointer-events:none;}
   @media (max-width:700px){ .corner.bl{display:none;} }
 
   .corner.tr{display:flex;align-items:center;gap:18px;}
@@ -314,7 +315,7 @@
   .t-item p{color:var(--muted);font-size:14.5px;max-width:60ch;}
 
   /* ---------- skills — plain columns, no boxes ---------- */
-  .skills-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:40px;}
+  .skills-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:40px;}
   @media (max-width:800px){.skills-grid{grid-template-columns:repeat(2,1fr);}}
   .skill-cell h4{font-family:var(--mono);font-size:12px;color:var(--amber);margin-bottom:18px;letter-spacing:0.03em;}
   .skill-cell ul{list-style:none;display:flex;flex-direction:column;gap:10px;}
@@ -341,9 +342,15 @@
     font-family:var(--mono);font-size:11.5px;color:var(--muted-2);border-top:1px solid var(--hairline);
   }
   @media (max-width:600px){footer{flex-direction:column;gap:8px;text-align:center;}}
+  .visitor-counter{display:flex;align-items:center;gap:8px;}
+  .visitor-counter::before{
+    content:'';width:5px;height:5px;border-radius:50%;background:var(--amber);
+    box-shadow:0 0 6px var(--amber);flex-shrink:0;
+  }
+  .visitor-counter #visitorCount{color:var(--paper);}
 
-  .reveal{opacity:0;transform:translateY(28px);transition:opacity 1.1s cubic-bezier(.16,1,.3,1),transform 1.1s cubic-bezier(.16,1,.3,1);}
-  .reveal.in{opacity:1;transform:translateY(0);}
+  .reveal{opacity:0;transform:translateY(34px) scale(0.985);transition:opacity 1.3s cubic-bezier(.16,1,.3,1),transform 1.3s cubic-bezier(.16,1,.3,1);}
+  .reveal.in{opacity:1;transform:translateY(0) scale(1);}
 </style>
 </head>
 <body>
@@ -486,8 +493,12 @@
         <ul><li>IP addressing &amp; CIDR</li><li>DNS</li><li>HTTP / HTTPS</li><li>Route tables &amp; gateways</li></ul>
       </div>
       <div class="skill-cell reveal">
+        <h4>DATABASES</h4>
+        <ul><li>SQL &amp; PL/SQL</li><li>PostgreSQL</li><li>MongoDB</li><li>MySQL</li></ul>
+      </div>
+      <div class="skill-cell reveal">
         <h4>LANGUAGES &amp; TOOLS</h4>
-        <ul><li>Python</li><li>JavaScript</li><li>PHP &amp; MySQL</li><li>Git &amp; GitHub Actions</li></ul>
+        <ul><li>Python</li><li>Data Structures &amp; Algorithms</li><li>JavaScript</li><li>PHP</li><li>Git &amp; GitHub Actions</li></ul>
       </div>
       <div class="skill-cell reveal">
         <h4>HARDWARE / IOT</h4>
@@ -499,10 +510,10 @@
   <!-- CONTACT -->
   <section class="contact wrap" id="contact">
     <div class="contact-kicker">05 / Contact</div>
-    <h2>Let's talk cloud, infrastructure,<br>or the next build — <a class="magnetic" href="mailto:abhishek.diwakar.me@gmail.com">My Email</a></h2>
+    <h2>Let's talk cloud, infrastructure,<br>or the next build — <a class="magnetic" href="mailto:your@email.com">your@email.com</a></h2>
     <div class="contact-links">
-      <a class="magnetic" href="https://www.linkedin.com/in/abhishek-diwakar-25a31a39a" target="_blank">LinkedIn ↗</a>
-      <a class="magnetic" href="https://github.com/bondkiller07" target="_blank">GitHub ↗</a>
+      <a class="magnetic" href="#">LinkedIn ↗</a>
+      <a class="magnetic" href="#">GitHub ↗</a>
       <a class="magnetic" href="#top">Back to top ↑</a>
     </div>
   </section>
@@ -510,10 +521,30 @@
 
 <footer>
   <span>© 2026 Abhishek Diwakar</span>
+  <span id="visitorCounter" class="visitor-counter">Visitors: <span id="visitorCount">—</span></span>
   <span>Built with intent, not a template</span>
 </footer>
 
 <script>
+  // Visitor counter — wired to the Serverless Visitor Counter API project.
+  // Swap in the real API Gateway endpoint once that project is deployed;
+  // until then this fails silently and just shows a dash.
+  const VISITOR_API_ENDPOINT = 'https://YOUR-API-ID.execute-api.ap-south-1.amazonaws.com/prod/count';
+  (function loadVisitorCount(){
+    const countEl = document.getElementById('visitorCount');
+    if(!countEl) return;
+    if(VISITOR_API_ENDPOINT.includes('YOUR-API-ID')){
+      return; // endpoint not deployed yet — leave the placeholder dash
+    }
+    fetch(VISITOR_API_ENDPOINT, { method:'POST' })
+      .then(res => { if(!res.ok) throw new Error('bad response'); return res.json(); })
+      .then(data => {
+        const n = data.count ?? data.visitors ?? data.Count;
+        if(typeof n === 'number') countEl.textContent = n.toLocaleString();
+      })
+      .catch(() => { /* endpoint unreachable — dash stays, no console noise for visitors */ });
+  })();
+
   // loader — adaptive: waits for the real font load, min 300ms so it never
   // flashes on a fast connection, safety-capped at 4s in case something stalls
   const loader = document.getElementById('loader');
@@ -535,6 +566,18 @@
     dismissLoader(); // no Font Loading API support — don't block
   }
   setTimeout(dismissLoader, 4000); // safety net, not a target duration
+
+  // hide fixed bottom corner marks once the footer scrolls into view
+  // (prevents them overlapping footer text at the very bottom of the page)
+  const footerEl = document.querySelector('footer');
+  if(footerEl){
+    const footerIO = new IntersectionObserver((entries)=>{
+      entries.forEach(e=>{
+        document.body.classList.toggle('footer-visible', e.isIntersecting);
+      });
+    }, { threshold: 0.05 });
+    footerIO.observe(footerEl);
+  }
 
   // top scroll-progress line
   const progressBar = document.getElementById('scrollProgress');
@@ -645,13 +688,18 @@
     el.addEventListener('mouseleave', ()=>{ el.style.transform = 'translate(0,0)'; });
   });
 
-  // scroll reveal (fade-up + mask-curtain headers)
+  // scroll reveal (fade-up + mask-curtain headers) — staggered per section
+  // so elements cascade in one after another instead of popping together
+  document.querySelectorAll('.section, .contact').forEach(section=>{
+    const items = section.querySelectorAll('.reveal, .reveal-mask');
+    items.forEach((el, i)=>{ el.style.transitionDelay = (i * 0.09) + 's'; });
+  });
   const revealEls = document.querySelectorAll('.reveal, .reveal-mask');
   const io = new IntersectionObserver((entries)=>{
     entries.forEach(e=>{
       if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); }
     });
-  }, { threshold: 0.15 });
+  }, { threshold: 0.1, rootMargin: '0px 0px -8% 0px' });
   revealEls.forEach(el=>io.observe(el));
 </script>
 
