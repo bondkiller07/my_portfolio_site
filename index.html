@@ -529,13 +529,10 @@
   // Visitor counter — wired to the Serverless Visitor Counter API project.
   // Swap in the real API Gateway endpoint once that project is deployed;
   // until then this fails silently and just shows a dash.
-  const VISITOR_API_ENDPOINT = 'https://YOUR-API-ID.execute-api.ap-south-1.amazonaws.com/prod/count';
+  const VISITOR_API_ENDPOINT = 'https://5p2m8hkqtf.execute-api.ap-south-1.amazonaws.com/count';
   (function loadVisitorCount(){
     const countEl = document.getElementById('visitorCount');
     if(!countEl) return;
-    if(VISITOR_API_ENDPOINT.includes('YOUR-API-ID')){
-      return; // endpoint not deployed yet — leave the placeholder dash
-    }
     fetch(VISITOR_API_ENDPOINT, { method:'POST' })
       .then(res => { if(!res.ok) throw new Error('bad response'); return res.json(); })
       .then(data => {
